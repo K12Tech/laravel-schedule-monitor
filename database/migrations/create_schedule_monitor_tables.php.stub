@@ -16,6 +16,7 @@ class CreateScheduleMonitorTables extends Migration
             $table->string('cron_expression');
             $table->string('timezone')->nullable();
             $table->string('ping_url')->nullable();
+            $table->string('app_name');
 
             $table->dateTime('last_started_at')->nullable();
             $table->dateTime('last_finished_at')->nullable();
