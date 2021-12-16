@@ -193,6 +193,13 @@ class MonitoredScheduledTask extends Model
         ]);
     }
 
+    public function deleteOlderLogItems(string $cutOffDate): int
+    {
+        return $this->logItems()
+            ->where('created_at', '<', $cutOffDate)
+            ->delete();
+    }
+
     /**
      * @param ScheduledTaskFailed|ScheduledTaskFinished $event
      */

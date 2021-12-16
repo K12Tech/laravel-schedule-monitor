@@ -4,6 +4,7 @@ namespace Spatie\ScheduleMonitor\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+use Spatie\ScheduleMonitor\Models\MonitoredScheduledTask;
 use Spatie\ScheduleMonitor\Support\Concerns\UsesScheduleMonitoringModels;
 
 class CleanLogCommand extends Command
@@ -22,10 +23,9 @@ class CleanLogCommand extends Command
 
         $cutOff = now()->subDays(config('schedule-monitor.delete_log_items_older_than_days'));
 
-        $numberOfRecordsDeleted = $this->getMonitoredScheduleTaskLogItemModel()
-            ->query()
-            ->where('created_at', '<', $cutOff->toDateTimeString())
-            ->delete();
+        $numberOfRecordsDeleted = $this->getMonitoredScheduleTaskModel()->appBased()->get()->map(function (MonitoredScheduledTask $task) use ($cutOff) {
+            return $task->deleteOlderLogItems($cutOff->toDateTimeString());
+        })->sum();
 
         $this->info('Deleted ' . $numberOfRecordsDeleted . ' ' . Str::plural('log item', $numberOfRecordsDeleted) . '!');
     }
