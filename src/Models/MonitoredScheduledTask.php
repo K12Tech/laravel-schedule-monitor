@@ -44,6 +44,7 @@ class MonitoredScheduledTask extends Model
 
         return $monitoredScheduledTask
             ->getMonitoredScheduleTaskModel()
+            ->appBased()
             ->where('name', $name)
             ->first();
     }
@@ -200,6 +201,13 @@ class MonitoredScheduledTask extends Model
         ]);
     }
 
+    public function deleteOlderLogItems(string $cutOffDate): int
+    {
+        return $this->logItems()
+            ->where('created_at', '<', $cutOffDate)
+            ->delete();
+    }
+
     /**
      * @param ScheduledTaskFailed|ScheduledTaskFinished $event
      */
@@ -224,5 +232,10 @@ class MonitoredScheduledTask extends Model
         $output = file_get_contents($event->task->output);
 
         return $output ?: null;
+    }
+
+    public function scopeAppBased($query)
+    {
+        return $query->where('app_name', config('schedule-monitor.app_name'));
     }
 }

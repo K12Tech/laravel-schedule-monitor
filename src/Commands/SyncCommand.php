@@ -30,7 +30,7 @@ class SyncCommand extends Command
             ->storeScheduledTasksInDatabase()
             ->storeMonitoredScheduledTasksInOhDear();
 
-        $monitoredScheduledTasksCount = $this->getMonitoredScheduleTaskModel()->count();
+        $monitoredScheduledTasksCount = $this->getMonitoredScheduleTaskModel()->appBased()->count();
 
         render(view('schedule-monitor::sync', [
             'monitoredScheduledTasksCount' => $monitoredScheduledTasksCount,
@@ -46,12 +46,13 @@ class SyncCommand extends Command
         $monitoredScheduledTasks = ScheduledTasks::createForSchedule()
             ->uniqueTasks()
             ->map(function (Task $task) {
-                return $this->getMonitoredScheduleTaskModel()->updateOrCreate(
+                return $this->getMonitoredScheduleTaskModel()->appBased()->updateOrCreate(
                     ['name' => $task->name()],
                     [
                         'type' => $task->type(),
                         'cron_expression' => $task->cronExpression(),
                         'timezone' => $task->timezone(),
+                        'app_name' => config('schedule-monitor.app_name'),
                         'grace_time_in_minutes' => $task->graceTimeInMinutes(),
                     ]
                 );
@@ -59,6 +60,7 @@ class SyncCommand extends Command
 
         if (! $this->option('keep-old')) {
             $this->getMonitoredScheduleTaskModel()->query()
+                ->appBased()
                 ->whereNotIn('id', $monitoredScheduledTasks->pluck('id'))
                 ->delete();
         }
@@ -121,7 +123,7 @@ class SyncCommand extends Command
 
     protected function syncMonitoredScheduledTaskWithOhDear(int $siteId): array
     {
-        $monitoredScheduledTasks = $this->getMonitoredScheduleTaskModel()->get();
+        $monitoredScheduledTasks = $this->getMonitoredScheduleTaskModel()->appBased()->get();
 
         $cronChecks = $monitoredScheduledTasks
             ->map(function (MonitoredScheduledTask $monitoredScheduledTask) {
@@ -144,6 +146,7 @@ class SyncCommand extends Command
     protected function pushMonitoredScheduledTaskToOhDear(int $siteId): array
     {
         $tasksToRegister = $this->getMonitoredScheduleTaskModel()
+            ->appBased()
             ->whereNull('registered_on_oh_dear_at')
             ->get();
 

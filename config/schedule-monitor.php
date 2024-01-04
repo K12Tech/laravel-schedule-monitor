@@ -78,4 +78,9 @@ return [
 
 
     ],
+
+    /*
+     * Needed to distinguish between multiple apps running with the same database connectionand reusing the same tables
+     */
+    'app_name' => env('SCHEDULE_MONITOR_APP_NAME', 'Laravel'),
 ];

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Event;
 use OhDear\PhpSdk\OhDear;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Spatie\ScheduleMonitor\Commands\CleanLogCommand;
 use Spatie\ScheduleMonitor\Commands\ListCommand;
 use Spatie\ScheduleMonitor\Commands\SyncCommand;
 use Spatie\ScheduleMonitor\Commands\VerifyCommand;
@@ -39,6 +40,7 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
                 ListCommand::class,
                 SyncCommand::class,
                 VerifyCommand::class,
+                CleanLogCommand::class,
             ]);
     }
 
