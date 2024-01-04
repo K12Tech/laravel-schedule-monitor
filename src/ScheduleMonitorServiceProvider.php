@@ -14,11 +14,20 @@ use Spatie\ScheduleMonitor\Commands\VerifyCommand;
 use Spatie\ScheduleMonitor\EventHandlers\BackgroundCommandListener;
 use Spatie\ScheduleMonitor\EventHandlers\ScheduledTaskEventSubscriber;
 use Spatie\ScheduleMonitor\Exceptions\InvalidClassException;
+use Spatie\ScheduleMonitor\Jobs\PingOhDearJob;
 use Spatie\ScheduleMonitor\Models\MonitoredScheduledTask;
 use Spatie\ScheduleMonitor\Models\MonitoredScheduledTaskLogItem;
 
 class ScheduleMonitorServiceProvider extends PackageServiceProvider
 {
+    private string $monitorName;
+
+    private int $graceTimeInMinutes;
+
+    private bool $doNotMonitor;
+
+    private bool $storeOutputInDb;
+
     public function configurePackage(Package $package): void
     {
         $package
@@ -37,6 +46,7 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
     {
         $this
             ->configureOhDearApi()
+            ->silenceOhDearJob()
             ->registerEventHandlers()
             ->registerSchedulerEventMacros()
             ->registerModelBindings();
@@ -44,11 +54,7 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
 
     protected function registerModelBindings()
     {
-        $config = $this->app->config['schedule-monitor.models'];
-
-        if (! $config) {
-            return;
-        }
+        $config = config('schedule-monitor.models');
 
         $this->app->bind(MonitoredScheduledTask::class, $config['monitored_scheduled_task']);
         $this->app->bind(MonitoredScheduledTaskLogItem::class, $config['monitored_scheduled_log_item']);
@@ -70,6 +76,25 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
 
             return new OhDear($apiToken, 'https://ohdear.app/api/');
         });
+
+        return $this;
+    }
+
+    protected function silenceOhDearJob(): self
+    {
+        if (! config('schedule-monitor.oh_dear.silence_ping_oh_dear_job_in_horizon', true)) {
+            return $this;
+        }
+
+        $silencedJobs = config('horizon.silenced', []);
+
+        if (in_array(PingOhDearJob::class, $silencedJobs)) {
+            return $this;
+        }
+
+        $silencedJobs[] = PingOhDearJob::class;
+
+        config()->set('horizon.silenced', $silencedJobs);
 
         return $this;
     }
@@ -96,8 +121,8 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
             return $this;
         });
 
-        SchedulerEvent::macro('doNotMonitor', function () {
-            $this->doNotMonitor = true;
+        SchedulerEvent::macro('doNotMonitor', function (bool $bool = true) {
+            $this->doNotMonitor = $bool;
 
             return $this;
         });

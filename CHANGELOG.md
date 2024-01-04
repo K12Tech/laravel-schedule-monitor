@@ -2,6 +2,69 @@
 
 All notable changes to `laravel-schedule-monitor` will be documented in this file
 
+## 3.4.2 - 2023-12-14
+
+### What's Changed
+
+* fix: PHP warning about creation of dynamic properties by @Pr3d4dor in https://github.com/spatie/laravel-schedule-monitor/pull/98
+
+### New Contributors
+
+* @Pr3d4dor made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/98
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.4.1...3.4.2
+
+## 3.4.1 - 2023-11-29
+
+### What's Changed
+
+* Update README.md by @robjbrain in https://github.com/spatie/laravel-schedule-monitor/pull/96
+* Update MonitoredScheduledTask.php to get the failed response to be st… by @AKHIL-882 in https://github.com/spatie/laravel-schedule-monitor/pull/97
+
+### New Contributors
+
+* @robjbrain made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/96
+* @AKHIL-882 made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/97
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.4.0...3.4.1
+
+## 3.4.0 - 2023-08-01
+
+### What's Changed
+
+- Add note that syncing will remove other monitors by @keithbrink in https://github.com/spatie/laravel-schedule-monitor/pull/90
+- Fix anchor in link to Laravel docs by @limenet in https://github.com/spatie/laravel-schedule-monitor/pull/92
+- Non destructive sync option (keep-old) by @keithbrink in https://github.com/spatie/laravel-schedule-monitor/pull/91
+
+### New Contributors
+
+- @keithbrink made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/90
+- @limenet made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/92
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.3.0...3.4.0
+
+## 3.3.0 - 2023-05-24
+
+### What's Changed
+
+- Add a boolean parameter to the doNotMonitor function by @bilfeldt in https://github.com/spatie/laravel-schedule-monitor/pull/88
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.2.1...3.3.0
+
+## 3.2.1 - 2023-02-01
+
+- fix silent by default
+
+## 3.2.0 - 2023-02-01
+
+- silence jobs by default
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.1.1...3.2.0
+
+## 3.1.1 - 2023-01-23
+
+- support L10
+
 ## 3.0.4 - 2022-10-02
 
 - update deps

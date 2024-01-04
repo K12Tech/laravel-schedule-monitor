@@ -1,6 +1,3 @@
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/support-ukraine.svg?t=1" />](https://supportukrainenow.org)
-
 # Monitor scheduled tasks in a Laravel app
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-schedule-monitor.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-schedule-monitor)
@@ -121,7 +118,7 @@ return [
 
 The schedule monitor will log each start, finish and failure of all scheduled jobs.  After a while the `monitored_scheduled_task_log_items` might become big.
 
-Use [Laravel's model pruning feature](https://laravel.com/docs/9.x/eloquent#mass-assignment) , you can delete old `MonitoredScheduledTaskLogItem` models. Models older than the amount of days configured in the `delete_log_items_older_than_days` in the `schedule-monitor` config file, will be deleted.
+Use [Laravel's model pruning feature](https://laravel.com/docs/9.x/eloquent#pruning-models) , you can delete old `MonitoredScheduledTaskLogItem` models. Models older than the amount of days configured in the `delete_log_items_older_than_days` in the `schedule-monitor` config file, will be deleted.
 
 ```php
 // app/Console/Kernel.php
@@ -142,12 +139,16 @@ class Kernel extends ConsoleKernel
 Every time you deploy your application, you should execute the `schedule-monitor:sync` command
 
 ```bash
-schedule-monitor:sync
+php artisan schedule-monitor:sync
 ```
 
 This command is responsible for syncing your schedule with the database, and optionally Oh Dear. We highly recommend adding this command to the script that deploys your production environment.
 
 In a non-production environment you should manually run `schedule-monitor:sync`. You can verify if everything synced correctly using `schedule-monitor:list`.
+
+**Note:** Running the sync command will remove any other cron monitors that you've defined other than the application schedule.
+
+If you would like to use non-destructive syncs to Oh Dear so that you can monitor other cron tasks outside of Laravel, you can use the `--keep-old` flag. This will only push new tasks to Oh Dear, rather than a full sync. Note that this will not remove any tasks from Oh Dear that are no longer in your schedule.
 
 ## Usage
 
