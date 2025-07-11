@@ -1,7 +1,6 @@
 # Monitor scheduled tasks in a Laravel app
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/spatie/laravel-schedule-monitor.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-schedule-monitor)
-![Tests](https://github.com/spatie/laravel-schedule-monitor/workflows/Tests/badge.svg)
 [![Total Downloads](https://img.shields.io/packagist/dt/spatie/laravel-schedule-monitor.svg?style=flat-square)](https://packagist.org/packages/spatie/laravel-schedule-monitor)
 
 This package will monitor your Laravel schedule. It will write an entry to a log table in the db each time a schedule tasks starts, end, fails or is skipped. Using the `list` command you can check when the scheduled tasks have been executed.
@@ -160,7 +159,7 @@ To view all monitored scheduled tasks, you can run `schedule-monitor:list`. This
 
 ![screenshot](https://github.com/spatie/laravel-schedule-monitor/blob/main/docs/list.png)
 
-The package will write an entry to the `monitored_scheduled_task_log_items` table in the db each time a schedule tasks starts, end, fails or is skipped. Take a look at the contest of that table if you want to know when and how scheduled tasks did execute. The log items also hold other interesting metrics like memory usage, execution time, and more.
+The package will write an entry to the `monitored_scheduled_task_log_items` table in the db each time a schedule tasks starts, end, fails or is skipped. Take a look at the contents of that table if you want to know when and how scheduled tasks did execute. The log items also hold other interesting metrics like memory usage, execution time, and more.
 
 ### Naming tasks
 
@@ -285,6 +284,19 @@ Here's an example where Oh Dear will send a notification if the task didn't fini
 protected function schedule(Schedule $schedule)
 {
    $schedule->command('your-command')->daily()->graceTimeInMinutes(10);
+}
+```
+
+### Disabling Oh Dear for individual tasks
+
+If you want to have a task monitored by the schedule monitor, but not by Oh Dear, you can tack on `doMonitorAtOhDear` to your scheduled tasks.
+
+```php
+// in app/Console/Kernel.php
+
+protected function schedule(Schedule $schedule)
+{
+   $schedule->command('your-command')->daily()->doNotMonitorAtOhDear();
 }
 ```
 

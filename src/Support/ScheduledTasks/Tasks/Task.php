@@ -10,11 +10,13 @@ use Illuminate\Support\Str;
 use Lorisleiva\CronTranslator\CronParsingException;
 use Lorisleiva\CronTranslator\CronTranslator;
 use Spatie\ScheduleMonitor\Models\MonitoredScheduledTask;
+use Spatie\ScheduleMonitor\Support\Concerns\UsesMonitoredScheduledTasks;
 use Spatie\ScheduleMonitor\Support\Concerns\UsesScheduleMonitoringModels;
 
 abstract class Task
 {
     use UsesScheduleMonitoringModels;
+    use UsesMonitoredScheduledTasks;
 
     protected Event $event;
 
@@ -46,21 +48,35 @@ abstract class Task
 
     public function name(): ?string
     {
-        return $this->event->monitorName ?? $this->defaultName();
+        return $this->getMonitoredScheduledTasks()->getMonitorName($this->event)
+            ?? $this->defaultName();
     }
 
     public function shouldMonitor(): bool
     {
-        if (! isset($this->event->doNotMonitor)) {
+        $doNotMonitor = $this->getMonitoredScheduledTasks()
+            ->getDoNotMonitor($this->event);
+        if (! isset($doNotMonitor)) {
             return true;
         }
 
-        return ! $this->event->doNotMonitor;
+        return ! $doNotMonitor;
     }
 
     public function isBeingMonitored(): bool
     {
         return ! is_null($this->monitoredScheduledTask);
+    }
+
+    public function shouldMonitorAtOhDear(): bool
+    {
+        $doNotMonitorAtOhDear = $this->getMonitoredScheduledTasks()
+            ->getDoNotMonitorAtOhDear($this->event);
+        if (! isset($doNotMonitorAtOhDear)) {
+            return true;
+        }
+
+        return ! $doNotMonitorAtOhDear;
     }
 
     public function isBeingMonitoredAtOhDear(): bool
@@ -69,19 +85,23 @@ abstract class Task
             return false;
         }
 
+        if (! $this->shouldMonitorAtOhDear()) {
+            return false;
+        }
+
         return ! empty($this->monitoredScheduledTask->ping_url);
     }
 
     public function previousRunAt(): CarbonInterface
     {
-        $dateTime = CronExpression::factory($this->cronExpression())->getPreviousRunDate(now());
+        $dateTime = (new CronExpression($this->cronExpression()))->getPreviousRunDate(now());
 
         return Date::instance($dateTime);
     }
 
-    public function nextRunAt(CarbonInterface $now = null): CarbonInterface
+    public function nextRunAt(?CarbonInterface $now = null): CarbonInterface
     {
-        $dateTime = CronExpression::factory($this->cronExpression())->getNextRunDate(
+        $dateTime = (new CronExpression($this->cronExpression()))->getNextRunDate(
             $now ?? now(),
             0,
             false,
@@ -123,10 +143,9 @@ abstract class Task
 
         $lastFinishedAt = $this->lastRunFinishedAt()
             ? $this->lastRunFinishedAt()
-            : $this->monitoredScheduledTask->created_at;
+            : $this->monitoredScheduledTask->created_at->subSecond();
 
-        $expectedNextRunStart = $this->nextRunAt($lastFinishedAt->subSecond());
-
+        $expectedNextRunStart = $this->nextRunAt($lastFinishedAt);
         $shouldHaveFinishedAt = $expectedNextRunStart->addMinutes($this->graceTimeInMinutes());
 
         return $shouldHaveFinishedAt->isPast();
@@ -151,7 +170,8 @@ abstract class Task
 
     public function graceTimeInMinutes()
     {
-        return $this->event->graceTimeInMinutes ?? 5;
+        return $this->getMonitoredScheduledTasks()->getGraceTimeInMinutes($this->event)
+            ?? config('schedule-monitor.oh_dear.grace_time_in_minutes', 5);
     }
 
     public function cronExpression(): string
@@ -171,5 +191,10 @@ abstract class Task
         } catch (CronParsingException $exception) {
             return $this->cronExpression();
         }
+    }
+
+    public function runsInBackground():bool
+    {
+        return $this->event->runInBackground;
     }
 }

@@ -2,6 +2,180 @@
 
 All notable changes to `laravel-schedule-monitor` will be documented in this file
 
+## 3.10.3 - 2025-02-21
+
+### What's Changed
+
+* set default oh dear api url by @resohead in https://github.com/spatie/laravel-schedule-monitor/pull/125
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.10.2...3.10.3
+
+## 3.10.2 - 2025-02-21
+
+### What's Changed
+
+* Additional custom ping endpoint and config by @resohead in https://github.com/spatie/laravel-schedule-monitor/pull/123
+
+### New Contributors
+
+* @resohead made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/123
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.10.1...3.10.2
+
+## 3.10.1 - 2025-02-21
+
+### What's Changed
+
+* Laravel 12.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-schedule-monitor/pull/122
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.10.0...3.10.1
+
+## 2.4.8 - 2025-02-17
+
+### What's Changed
+
+* Update MonitoredScheduledTask.php to get the failed response to be st… by @675076143 in https://github.com/spatie/laravel-schedule-monitor/pull/121
+
+### New Contributors
+
+* @675076143 made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/121
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/2.4.7...2.4.8
+
+## 3.10.0 - 2025-02-05
+
+### What's Changed
+
+* Add support for a custom ping endpoint in Oh Dear by @mattiasgeniar in https://github.com/spatie/laravel-schedule-monitor/pull/119
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.9.2...3.10.0
+
+## 3.9.2 - 2025-01-17
+
+### What's Changed
+
+* Use explicit nullable type is Task::nextRunAt by @bastien-phi in https://github.com/spatie/laravel-schedule-monitor/pull/117
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.9.1...3.9.2
+
+## 3.9.1 - 2025-01-17
+
+### What's Changed
+
+* Fix CronExpression deprecation using constructor instead of factory method by @bastien-phi in https://github.com/spatie/laravel-schedule-monitor/pull/118
+
+### New Contributors
+
+* @bastien-phi made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/118
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.9.0...3.9.1
+
+## 3.9.0 - 2025-01-06
+
+### What's Changed
+
+* Store schedule monitoring configurations in its own singleton by @m-bymike in https://github.com/spatie/laravel-schedule-monitor/pull/114
+
+### New Contributors
+
+* @m-bymike made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/114
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.8.2...3.9.0
+
+## 3.8.2 - 2024-12-16
+
+### What's Changed
+
+* don't write to horizon config when not available by @Propaganistas in https://github.com/spatie/laravel-schedule-monitor/pull/116
+
+### New Contributors
+
+* @Propaganistas made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/116
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.8.1...3.8.2
+
+## 3.8.1 - 2024-07-29
+
+### What's Changed
+
+* Fix prune link in config file comment by @pelmered in https://github.com/spatie/laravel-schedule-monitor/pull/113
+
+### New Contributors
+
+* @pelmered made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/113
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.8.0...3.8.1
+
+## 3.8.0 - 2024-06-17
+
+### What's Changed
+
+* Update README.md typo by @acip in https://github.com/spatie/laravel-schedule-monitor/pull/111
+* Make `graceTimeInMinutes` configurable by @faustbrian in https://github.com/spatie/laravel-schedule-monitor/pull/112
+
+### New Contributors
+
+* @acip made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/111
+* @faustbrian made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/112
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.7.1...3.8.0
+
+## 3.7.1 - 2024-03-28
+
+### What's Changed
+
+* Fix wrong lastRunFinishedTooLate behaviour when lastStartedAt and lastFinishedAt are within a second because of a very fast task by @mathiasmoser in https://github.com/spatie/laravel-schedule-monitor/pull/109
+
+### New Contributors
+
+* @mathiasmoser made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/109
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.7.0...3.7.1
+
+## 3.7.0 - 2024-03-02
+
+### What's Changed
+
+* Laravel 11.x Compatibility by @laravel-shift in https://github.com/spatie/laravel-schedule-monitor/pull/106
+
+### New Contributors
+
+* @laravel-shift made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/106
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.6.0...3.7.0
+
+## 3.6.0 - 2024-02-28
+
+### What's Changed
+
+* New method runsInBackground() added in  Spatie\ScheduleMonitor\Support\ScheduledTasks\Tasks\Task:class by @ravi289 in https://github.com/spatie/laravel-schedule-monitor/pull/105
+
+### New Contributors
+
+* @ravi289 made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/105
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.5.0...3.6.0
+
+## 3.5.0 - 2024-01-26
+
+### What's Changed
+
+* Allow tasks to be monitored but not synced with oh dear by @oddvalue in https://github.com/spatie/laravel-schedule-monitor/pull/102
+
+### New Contributors
+
+* @oddvalue made their first contribution in https://github.com/spatie/laravel-schedule-monitor/pull/102
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.4.3...3.5.0
+
+## 3.4.3 - 2024-01-19
+
+### What's Changed
+
+* Update nunomaduro/termwind to 2.0 by @yoeriboven in https://github.com/spatie/laravel-schedule-monitor/pull/99
+
+**Full Changelog**: https://github.com/spatie/laravel-schedule-monitor/compare/3.4.2...3.4.3
+
 ## 3.4.2 - 2023-12-14
 
 ### What's Changed

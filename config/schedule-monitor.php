@@ -7,7 +7,7 @@ return [
      * Here you can specify the amount of days log items should be kept.
      *
      * Use Laravel's pruning command to delete old `MonitoredScheduledTaskLogItem` models.
-     * More info: https://laravel.com/docs/9.x/eloquent#mass-assignment
+     * More info: https://laravel.com/docs/11.x/eloquent#pruning-models
      */
     'delete_log_items_older_than_days' => 30,
 
@@ -35,7 +35,7 @@ return [
      * Oh Dear can notify you via Mail, Slack, SMS, web hooks, ... when a
      * scheduled task does not run on time.
      *
-     * More info: https://ohdear.app/cron-checks
+     * More info: https://ohdear.app/docs/features/cron-job-monitoring
      */
     'oh_dear' => [
         /*
@@ -76,6 +76,20 @@ return [
          */
         'send_starting_ping' => env('OH_DEAR_SEND_STARTING_PING', false),
 
+        /**
+         * The amount of minutes a scheduled task is allowed to run before it is
+         * considered late.
+         */
+        'grace_time_in_minutes' => 5,
 
+        /**
+         * Which endpoint to ping on Oh Dear.
+         */
+        'endpoint_url' => env('OH_DEAR_PING_ENDPOINT_URL'),
+
+        /**
+         * The URL of the Oh Dear API.
+         */
+        'api_url' => env('OH_DEAR_API_URL', 'https://ohdear.app/api/'),
     ],
 ];
