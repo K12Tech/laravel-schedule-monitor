@@ -48,13 +48,13 @@ class SyncCommand extends Command
             ->map(function (Task $task) {
                 return $this->getMonitoredScheduleTaskModel()->appBased()->updateOrCreate(
                     ['name' => $task->name()],
-                    [
+                    array_merge([
                         'type' => $task->type(),
                         'cron_expression' => $task->cronExpression(),
                         'timezone' => $task->timezone(),
                         'app_name' => config('schedule-monitor.app_name'),
                         'grace_time_in_minutes' => $task->graceTimeInMinutes(),
-                    ]
+                    ], $task->shouldMonitorAtOhDear() ? [] : ['ping_url' => null])
                 );
             });
 
@@ -113,7 +113,7 @@ class SyncCommand extends Command
                         return;
                     }
 
-                    $monitoredScheduledTask->update(['ping_url' => $cronCheck->pingUrl]);
+                    $monitoredScheduledTask->update(['ping_url' => $this->pingUrl($cronCheck)]);
                     $monitoredScheduledTask->markAsRegisteredOnOhDear();
                 }
             );
@@ -121,9 +121,26 @@ class SyncCommand extends Command
         return $this;
     }
 
+    protected function pingUrl(CronCheck $cronCheck): string
+    {
+        if ($userDefinedEndpoint = config('schedule-monitor.oh_dear.endpoint_url')) {
+            return rtrim($userDefinedEndpoint, '/') . '/' . $cronCheck->uuid;
+        }
+
+        return $cronCheck->pingUrl;
+    }
+
     protected function syncMonitoredScheduledTaskWithOhDear(int $siteId): array
     {
-        $monitoredScheduledTasks = $this->getMonitoredScheduleTaskModel()->appBased()->get();
+        $monitoredScheduledTasks = $this->getMonitoredScheduleTaskModel()
+        	->appBased()
+            ->whereIn(
+                'name',
+                ScheduledTasks::createForSchedule()
+                    ->monitoredAtOhDear()
+                    ->map->name()
+            )
+            ->get();
 
         $cronChecks = $monitoredScheduledTasks
             ->map(function (MonitoredScheduledTask $monitoredScheduledTask) {
@@ -148,6 +165,12 @@ class SyncCommand extends Command
         $tasksToRegister = $this->getMonitoredScheduleTaskModel()
             ->appBased()
             ->whereNull('registered_on_oh_dear_at')
+            ->whereIn(
+                'name',
+                ScheduledTasks::createForSchedule()
+                    ->monitoredAtOhDear()
+                    ->map->name()
+            )
             ->get();
 
         $cronChecks = [];

@@ -5,6 +5,7 @@ namespace Spatie\ScheduleMonitor;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Console\Scheduling\Event as SchedulerEvent;
 use Illuminate\Support\Facades\Event;
+use Laravel\Horizon\Horizon;
 use OhDear\PhpSdk\OhDear;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -18,6 +19,7 @@ use Spatie\ScheduleMonitor\Exceptions\InvalidClassException;
 use Spatie\ScheduleMonitor\Jobs\PingOhDearJob;
 use Spatie\ScheduleMonitor\Models\MonitoredScheduledTask;
 use Spatie\ScheduleMonitor\Models\MonitoredScheduledTaskLogItem;
+use Spatie\ScheduleMonitor\Support\ScheduledTasks\MonitoredScheduledTasks;
 
 class ScheduleMonitorServiceProvider extends PackageServiceProvider
 {
@@ -26,6 +28,8 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
     private int $graceTimeInMinutes;
 
     private bool $doNotMonitor;
+
+    private bool $doNotMonitorAtOhDear;
 
     private bool $storeOutputInDb;
 
@@ -76,7 +80,7 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
         $this->app->bind(OhDear::class, function () {
             $apiToken = config('schedule-monitor.oh_dear.api_token');
 
-            return new OhDear($apiToken, 'https://ohdear.app/api/');
+            return new OhDear($apiToken, config('schedule-monitor.oh_dear.api_url', 'https://ohdear.app/api/'));
         });
 
         return $this;
@@ -85,6 +89,10 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
     protected function silenceOhDearJob(): self
     {
         if (! config('schedule-monitor.oh_dear.silence_ping_oh_dear_job_in_horizon', true)) {
+            return $this;
+        }
+
+        if (! class_exists(Horizon::class)) {
             return $this;
         }
 
@@ -111,26 +119,40 @@ class ScheduleMonitorServiceProvider extends PackageServiceProvider
 
     protected function registerSchedulerEventMacros(): self
     {
-        SchedulerEvent::macro('monitorName', function (string $monitorName) {
-            $this->monitorName = $monitorName;
+        $this->app->singleton(
+            MonitoredScheduledTasks::class,
+            fn () => new MonitoredScheduledTasks(),
+        );
+
+        /** @var MonitoredScheduledTasks $monitoredScheduledTasks */
+        $monitoredScheduledTasks = $this->app->make(MonitoredScheduledTasks::class);
+
+        SchedulerEvent::macro('monitorName', function (string $monitorName) use ($monitoredScheduledTasks) {
+            $monitoredScheduledTasks->setMonitorName($this, $monitorName);
 
             return $this;
         });
 
-        SchedulerEvent::macro('graceTimeInMinutes', function (int $graceTimeInMinutes) {
-            $this->graceTimeInMinutes = $graceTimeInMinutes;
+        SchedulerEvent::macro('graceTimeInMinutes', function (int $graceTimeInMinutes) use ($monitoredScheduledTasks) {
+            $monitoredScheduledTasks->setGraceTimeInMinutes($this, $graceTimeInMinutes);
 
             return $this;
         });
 
-        SchedulerEvent::macro('doNotMonitor', function (bool $bool = true) {
-            $this->doNotMonitor = $bool;
+        SchedulerEvent::macro('doNotMonitor', function (bool $bool = true) use ($monitoredScheduledTasks) {
+            $monitoredScheduledTasks->setDoNotMonitor($this, $bool);
 
             return $this;
         });
 
-        SchedulerEvent::macro('storeOutputInDb', function () {
-            $this->storeOutputInDb = true;
+        SchedulerEvent::macro('doNotMonitorAtOhDear', function (bool $bool = true) use ($monitoredScheduledTasks) {
+            $monitoredScheduledTasks->setDoNotMonitorAtOhDear($this, $bool);
+
+            return $this;
+        });
+
+        SchedulerEvent::macro('storeOutputInDb', function (bool $bool = true) use ($monitoredScheduledTasks) {
+            $monitoredScheduledTasks->setStoreOutputInDb($this, $bool);
             /** @psalm-suppress UndefinedMethod */
             $this->ensureOutputIsBeingCaptured();
 
