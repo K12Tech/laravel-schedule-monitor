@@ -133,7 +133,7 @@ class SyncCommand extends Command
     protected function syncMonitoredScheduledTaskWithOhDear(int $siteId): array
     {
         $monitoredScheduledTasks = $this->getMonitoredScheduleTaskModel()
-        	->appBased()
+            ->appBased()
             ->whereIn(
                 'name',
                 ScheduledTasks::createForSchedule()
