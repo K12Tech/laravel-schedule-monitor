@@ -4,7 +4,7 @@ namespace Spatie\ScheduleMonitor\Commands;
 
 use Exception;
 use Illuminate\Console\Command;
-use OhDear\PhpSdk\OhDear;
+use Spatie\ScheduleMonitor\Support\OhDear\OhDear;
 use function Termwind\render;
 
 class VerifyCommand extends Command
@@ -24,7 +24,7 @@ class VerifyCommand extends Command
         $this
             ->verifySdkInstalled()
             ->verifyApiToken($ohDearConfig)
-            ->verifySiteId($ohDearConfig)
+            ->verifyMonitorId($ohDearConfig)
             ->verifyConnection($ohDearConfig);
 
         render(view('schedule-monitor::alert', [
@@ -61,14 +61,14 @@ class VerifyCommand extends Command
         return $this;
     }
 
-    protected function verifySiteId(array $ohDearConfig): self
+    protected function verifyMonitorId(array $ohDearConfig): self
     {
-        if (empty($ohDearConfig['site_id'])) {
-            throw new Exception('No site id found. Make sure you added an site id to the `site_id` key of the `schedule-monitor` config file. You can found your site id on the settings page of a site on Oh Dear.');
+        if (empty($ohDearConfig['monitor_id'])) {
+            throw new Exception('No monitor id found. Make sure you added an monitor id to the `monitor_id` key of the `schedule-monitor` config file. You can found your monitor id on the settings page of a monitor on Oh Dear.');
         }
 
         render(view('schedule-monitor::alert', [
-            'message' => 'Oh Dear site id found.',
+            'message' => 'Oh Dear monitor id found.',
         ]));
 
         return $this;
@@ -78,10 +78,10 @@ class VerifyCommand extends Command
     {
         $this->comment('Trying to reach Oh Dear...');
 
-        $site = app(OhDear::class)->site($ohDearConfig['site_id']);
+        $monitor = app(OhDear::class)->monitor($ohDearConfig['monitor_id']);
 
         render(view('schedule-monitor::alert', [
-            'message' => "Successfully connected to Oh Dear. The configured site URL is: {$site->sortUrl}",
+            'message' => "Successfully connected to Oh Dear. The configured monitor URL is: {$monitor['sort_url']}",
         ]));
 
         return $this;
